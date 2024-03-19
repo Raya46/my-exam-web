@@ -26,10 +26,8 @@ const DashboardSuperAdmin = () => {
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
   const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
-  const [token, setToken] = useState("");
-  const [subscriptionStatus, setSubscriptionStatus] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("");
+  const [startDate, setStartDate] = useState("");
   const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -53,26 +51,9 @@ const DashboardSuperAdmin = () => {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.post(
         `${BASE_API_URL}super-admin/post`,
-        { name, password, role },
+        { name, paymentStatus, startDate,subscriptionExpiryDate },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-      if (response.data.data === "berhasil") {
-        setModalOpen(false);
-        getSubsData();
-        toast({
-          title: "Add user berhasil",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Name atau Password salah",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
     } catch (error) {
       console.error("Error adding user:", error);
       toast({
@@ -88,13 +69,22 @@ const DashboardSuperAdmin = () => {
     getSubsData();
   }, []);
 
-  const handleCardPress = (user) => {
-    setSelectedUser(user);
-    setName(user.name);
-    setPassword(user.password);
-    setRole(user.role);
+  const handleCardPress = (data) => {
+    setSelectedUser(data);
+    setName(data.user.name);
+    setPaymentStatus(data.status);
+    setStartDate(data.created_at);
+    setSubscriptionExpiryDate(data.user.subscription_expiry_date);
     setModalEdit(true);
   };
+
+  const handleModalOpen = () =>{
+    setName("");
+    setPaymentStatus("");
+    setStartDate("");
+    setSubscriptionExpiryDate("");
+    setModalOpen(true);
+  }
 
   const deleteUser = async (id) => {
     try {
@@ -125,26 +115,9 @@ const DashboardSuperAdmin = () => {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.put(
         `${BASE_API_URL}super-admin/${id}`,
-        { name, password, role },
+        { name, paymentStatus, startDate,subscriptionExpiryDate },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-      if (response.data.data === "success") {
-        setModalEdit(false);
-        getSubsData();
-        toast({
-          title: "Edit user berhasil",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Edit user gagal",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
     } catch (error) {
       console.error("Error editing user:", error);
       toast({
@@ -180,7 +153,7 @@ const DashboardSuperAdmin = () => {
       <Box flex="1" bg="gray.100" p={6}>
         <Flex alignItems="center" mb={6}>
           <Heading size="md">Dashboard</Heading>
-          <Button onClick={() => setModalOpen(true)}>+</Button>
+          <Button onClick={() => handleModalOpen()}>+</Button>
           <Button onClick={() => handleLogout()}>logout</Button>
           <Spacer />
         </Flex>
@@ -224,17 +197,13 @@ const DashboardSuperAdmin = () => {
           selectedUser={selectedUser}
           name={name}
           setName={setName}
-          password={password}
-          setPassword={setPassword}
-          role={role}
-          setRole={setRole}
-          editUser={editUser}
-          token={token}
-          setToken={setToken}
-          subscriptionStatus={subscriptionStatus}
-          setSubscriptionStatus={setSubscriptionStatus}
           subscriptionExpiryDate={subscriptionExpiryDate}
           setSubscriptionExpiryDate={setSubscriptionExpiryDate}
+          paymentStatus={paymentStatus}
+          setPaymentStatus={setPaymentStatus}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          editUser={editUser}
         />
 
         {/* Add User Modal */}
@@ -243,10 +212,12 @@ const DashboardSuperAdmin = () => {
           setModalOpen={setModalOpen}
           name={name}
           setName={setName}
-          password={password}
-          setPassword={setPassword}
-          role={role}
-          setRole={setRole}
+          paymentStatus={paymentStatus}
+          setPaymentStatus={setPaymentStatus}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          subscriptionExpiryDate={subscriptionExpiryDate}
+          setSubscriptionExpiryDate={setSubscriptionExpiryDate}
           addUser={addUser}
         />
       </Box>
