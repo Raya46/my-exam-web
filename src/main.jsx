@@ -3,9 +3,9 @@ import { ChakraProvider } from "@chakra-ui/react";
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
-import HomePage from "./pages/HomePage";
-import Dashboard from "./pages/Dashboard";
-import PaymentPage from "./pages/PaymentPage";
+import HomePage from "./pages/admin-sekolah/HomePage";
+import Dashboard from "./pages/admin-sekolah/DashboardAdminSekolah";
+import LoginPage from "./pages/LoginPage";
 
 const router = createBrowserRouter([
   {
@@ -17,8 +17,8 @@ const router = createBrowserRouter([
     element: <Dashboard />,
   },
   {
-    path: "/payment",
-    element: <PaymentPage />,
+    path: "/login",
+    element: <LoginPage />,
   },
 ]);
 
