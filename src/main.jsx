@@ -4,8 +4,10 @@ import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import HomePage from "./pages/admin-sekolah/HomePage";
-import Dashboard from "./pages/admin-sekolah/DashboardAdminSekolah";
 import LoginPage from "./pages/LoginPage";
+import DashboardAdminSekolah from "./pages/admin-sekolah/DashboardAdminSekolah";
+import DashboardSuperAdmin from "./pages/super-admin/DashboardSuperAdmin";
+import SubscriptionPage from "./pages/super-admin/SubscriptionPage";
 
 const router = createBrowserRouter([
   {
@@ -13,8 +15,16 @@ const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
-    path: "/dashboard",
-    element: <Dashboard />,
+    path: "/admin-sekolah/dashboard",
+    element: <DashboardAdminSekolah />,
+  },
+  {
+    path: "/super-admin/dashboard",
+    element: <DashboardSuperAdmin />,
+  },
+  {
+    path: "/super-admin/subscription",
+    element: <SubscriptionPage />,
   },
   {
     path: "/login",

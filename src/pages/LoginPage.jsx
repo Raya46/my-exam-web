@@ -34,7 +34,7 @@ const LoginPage = () => {
 
     if (response.data.status === true) {
       localStorage.setItem("userToken", response.data.token);
-      navigate("/dashboard");
+      navigate("/admin-sekolah/dashboard");
       toast({
         title: "Login Berhasil",
         status: "success",

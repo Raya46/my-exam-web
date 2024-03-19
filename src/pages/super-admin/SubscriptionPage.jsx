@@ -21,12 +21,13 @@ import EditUserModal from "../../components/EditUserModal";
 import AddUserModal from "../../components/AddUserModal";
 import { useNavigate } from "react-router-dom";
 
-const DashboardAdminSekolah = () => {
+const SubscriptionPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const [token, setToken] = useState("");
   const [subscriptionStatus, setSubscriptionStatus] = useState("");
   const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState("");
@@ -37,9 +38,10 @@ const DashboardAdminSekolah = () => {
   const getSubsData = async () => {
     try {
       const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}admin-sekolah`, {
+      const response = await axios.get(`${BASE_API_URL}subscription`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
+      console.log(response.data.data)
       setsubsData(response.data.data);
     } catch (error) {
       console.error("Error fetching subscription data:", error);
@@ -50,8 +52,8 @@ const DashboardAdminSekolah = () => {
     try {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.post(
-        `${BASE_API_URL}admin-sekolah/post`,
-        { name, password },
+        `${BASE_API_URL}subscription/post`,
+        { name, password, role },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
       if (response.data.data === "berhasil") {
@@ -90,13 +92,14 @@ const DashboardAdminSekolah = () => {
     setSelectedUser(user);
     setName(user.name);
     setPassword(user.password);
+    setRole(user.role);
     setModalEdit(true);
   };
 
   const deleteUser = async (id) => {
     try {
       const userToken = localStorage.getItem("userToken");
-      await axios.delete(`${BASE_API_URL}admin-sekolah/${id}`, {
+      await axios.delete(`${BASE_API_URL}subscription/${id}`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
       getSubsData();
@@ -121,8 +124,8 @@ const DashboardAdminSekolah = () => {
     try {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.put(
-        `${BASE_API_URL}admin-sekolah/${id}`,
-        { name, password },
+        `${BASE_API_URL}subscription/${id}`,
+        { name, password, role },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
       if (response.data.data === "success") {
@@ -187,10 +190,11 @@ const DashboardAdminSekolah = () => {
               <Tr>
                 <Th>No</Th>
                 <Th>Name</Th>
-                <Th>Role</Th>
-                <Th>Token</Th>
-                <Th>Status</Th>
-                <Th>Expired Date</Th>
+                <Th>description</Th>
+                <Th>Price</Th>
+                <Th>currency</Th>
+                <Th>invoice_period</Th>
+                <Th>invoice_interval</Th>
                 <Th>Action</Th>
               </Tr>
             </Thead>
@@ -199,10 +203,11 @@ const DashboardAdminSekolah = () => {
                 <Tr key={item.id}>
                   <Td>{index + 1}</Td>
                   <Td>{item.name}</Td>
-                  <Td>{item.role}</Td>
-                  <Td>{item.token ?? "not member"}</Td>
-                  <Td>{item.subscription_expiry_date ?? 'not active'}</Td>
-                  <Td>{item.subscription_expiry_date ?? 'not active'}</Td>
+                  <Td>{item.description}</Td>
+                  <Td>{item.price}</Td>
+                  <Td>{item.currency}</Td>
+                  <Td>{item.invoice_period}</Td>
+                  <Td>{item.invoice_interval}</Td>
                   <Td alignItems={"center"}>
                     <Button onClick={() => handleCardPress(item)}>Edit</Button>
                     <Button onClick={() => deleteUser(item.id)}>Delete</Button>
@@ -221,6 +226,8 @@ const DashboardAdminSekolah = () => {
           setName={setName}
           password={password}
           setPassword={setPassword}
+          role={role}
+          setRole={setRole}
           editUser={editUser}
           token={token}
           setToken={setToken}
@@ -238,6 +245,8 @@ const DashboardAdminSekolah = () => {
           setName={setName}
           password={password}
           setPassword={setPassword}
+          role={role}
+          setRole={setRole}
           addUser={addUser}
         />
       </Box>
@@ -245,4 +254,4 @@ const DashboardAdminSekolah = () => {
   );
 };
 
-export default DashboardAdminSekolah;
+export default SubscriptionPage;
