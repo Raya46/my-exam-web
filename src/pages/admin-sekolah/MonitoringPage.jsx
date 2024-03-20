@@ -21,21 +21,19 @@ import EditUserModal from "../../components/EditUserModal";
 import AddUserModal from "../../components/AddUserModal";
 import { useNavigate } from "react-router-dom";
 
-const DashboardAdminSekolah = () => {
+const MonitoringPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [statusProgress, setStatusProgress] = useState("");
+  const [selectedLink, setSelectedLink] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
 
   const getSubsData = async () => {
     try {
       const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}admin-sekolah`, {
+      const response = await axios.get(`${BASE_API_URL}progress`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
       setsubsData(response.data.data);
@@ -44,91 +42,12 @@ const DashboardAdminSekolah = () => {
     }
   };
 
-  const addUser = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.post(
-        `${BASE_API_URL}admin-sekolah/post`,
-        { name, password },
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
-      if (response.data.data === "berhasil") {
-        setModalOpen(false);
-        getSubsData();
-        toast({
-          title: "Add user berhasil",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Name atau Password salah",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      console.error("Error adding user:", error);
-      toast({
-        title: "Error adding user",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  useEffect(() => {
-    getSubsData();
-  }, []);
-
-  const handleCardPress = (user) => {
-    setSelectedUser(user);
-    setName(user.name);
-    setPassword("");
-    setToken(user.token)
-    setModalEdit(true);
-  };
-
-  const handleModalOpen = () =>{
-    setName("");
-    setPassword("");
-    setToken("")
-    setModalOpen(true);
-  }
-
-  const deleteUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      await axios.delete(`${BASE_API_URL}admin-sekolah/${id}`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      getSubsData();
-      toast({
-        title: "Hapus user berhasil",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      toast({
-        title: "Error deleting user",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const editUser = async (id) => {
+  const editUser = async (id, user_id, link_id) => {
     try {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.put(
-        `${BASE_API_URL}admin-sekolah/${id}`,
-        { name, password },
+        `${BASE_API_URL}progress/${id}`,
+        { user_id: user_id, link_id: link_id, status_progress: statusProgress },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
       if (response.data.data === "success") {
@@ -159,6 +78,16 @@ const DashboardAdminSekolah = () => {
     }
   };
 
+  useEffect(() => {
+    getSubsData();
+  }, []);
+
+  const handleCardPress = (data) => {
+    setSelectedLink(data.link)
+    setStatusProgress(data.status_progress)
+    setModalEdit(true);
+  };
+
   const handleLogout = async () => {
     const userToken = localStorage.getItem("userToken");
     try {
@@ -183,7 +112,6 @@ const DashboardAdminSekolah = () => {
       <Box flex="1" bg="gray.100" p={6}>
         <Flex alignItems="center" mb={6}>
           <Heading size="md">Dashboard</Heading>
-          <Button onClick={() => handleModalOpen()}>+</Button>
           <Button onClick={() => handleLogout()}>logout</Button>
           <Spacer />
         </Flex>
@@ -193,8 +121,8 @@ const DashboardAdminSekolah = () => {
               <Tr>
                 <Th>No</Th>
                 <Th>Name</Th>
-                <Th>Sekolah</Th>
-                <Th>Token</Th>
+                <Th>Exam Title</Th>
+                <Th>Status</Th>
                 <Th>Action</Th>
               </Tr>
             </Thead>
@@ -202,9 +130,9 @@ const DashboardAdminSekolah = () => {
               {subsData.map((item, index) => (
                 <Tr key={item.id}>
                   <Td>{index + 1}</Td>
-                  <Td>{item.name}</Td>
-                  <Td>{item.sekolah}</Td>
-                  <Td>{item.token ?? "not member"}</Td>
+                  <Td>{item.user.name}</Td>
+                  <Td>{item.link.link_title}</Td>
+                  <Td>{item.status_progress}</Td>
                   <Td alignItems={"center"}>
                     <Button onClick={() => handleCardPress(item)}>Edit</Button>
                     <Button onClick={() => deleteUser(item.id)}>Delete</Button>
@@ -218,7 +146,7 @@ const DashboardAdminSekolah = () => {
         <EditUserModal
           modalEdit={modalEdit}
           setModalEdit={setModalEdit}
-          selectedUser={selectedUser}
+          selectedUser={selectedLink}
           name={name}
           setName={setName}
           password={password}
@@ -227,22 +155,9 @@ const DashboardAdminSekolah = () => {
           setToken={setToken}
           editUser={editUser}
         />
-
-        {/* Add User Modal */}
-        <AddUserModal
-          modalOpen={modalOpen}
-          setModalOpen={setModalOpen}
-          name={name}
-          setName={setName}
-          password={password}
-          setPassword={setPassword}
-          token={token}
-          setToken={setToken}
-          addUser={addUser}
-        />
       </Box>
     </Flex>
   );
 };
 
-export default DashboardAdminSekolah;
+export default MonitoringPage;

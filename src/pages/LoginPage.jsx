@@ -10,6 +10,7 @@ import {
   FormControl,
   FormLabel,
   useToast,
+  Text
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +33,7 @@ const LoginPage = () => {
       password: password,
     });
 
-    if (response.data.status === true) {
+    if (response.data.status === true && response.data.message === 'admin sekolah') {
       localStorage.setItem("userToken", response.data.token);
       navigate("/admin-sekolah/dashboard");
       toast({
@@ -41,7 +42,25 @@ const LoginPage = () => {
         duration: 3000,
         isClosable: true,
       });
-    } else {
+    } else if(response.data.status === true && response.data.message === 'super admin'){
+        localStorage.setItem("userToken", response.data.token);
+        navigate("/super-admin/dashboard");
+        toast({
+          title: "Login Berhasil",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+    } else if(response.data.status === true && response.data.message === 'siswa'){
+        navigate("/login");
+        toast({
+          title: "Siswa tidak punya akses",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+    }
+    else {
       toast({
         title: "name atau Password Salah",
         status: "error",
@@ -92,6 +111,7 @@ const LoginPage = () => {
             Login
           </Button>
         </form>
+        <Text onClick={() => navigate('/register')}>Belum punya akun? Register</Text>
       </Box>
     </Flex>
   );

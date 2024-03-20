@@ -18,32 +18,16 @@ import BASE_API_URL from "../../constant/ip";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [password, setpassword] = useState("");
   const [subsData, setsubsData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
 
   const handleCardPress = (subscription) => {
-    setSelectedSubscription(subscription);
-    setModalOpen(true);
-  };
-
-  const handleLogout = async () => {
-    const userToken = localStorage.getItem("userToken");
-    try {
-      await axios.post(
-        `${BASE_API_URL}logout`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${userToken}` },
-        }
-      );
-      localStorage.removeItem("userToken");
-      navigate("/");
-    } catch (error) {
-      localStorage.removeItem("userToken");
-      navigate("/");
+    if (localStorage.getItem("userToken")) {
+      setSelectedSubscription(subscription);
+      setModalOpen(true);
+    } else {
+      navigate("/login");
     }
   };
 
@@ -56,9 +40,7 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    localStorage.getItem("userToken") == null
-      ? navigate("/login")
-      : getSubsData();
+    getSubsData();
   }, []);
 
   const handleSubmit = async (item_name, price, subscription_id) => {
@@ -99,13 +81,31 @@ const HomePage = () => {
     }
   };
 
+  const handleLogout = async () => {
+    const userToken = localStorage.getItem("userToken");
+    try {
+      await axios.post(
+        `${BASE_API_URL}logout`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${userToken}` },
+        }
+      );
+      localStorage.removeItem("userToken");
+      navigate("/login");
+    } catch (error) {
+      localStorage.removeItem("userToken");
+      navigate("/login");
+    }
+  };
+
   return (
     <>
-      <Text>sudah login</Text>
-      <Button onClick={() => handleLogout()}>logout</Button>
-      <Button onClick={() => console.log(localStorage.getItem("userToken"))}>
-        tes
-      </Button>
+      {localStorage.getItem("userToken") ? (
+        <Button onClick={() => handleLogout()}>logout</Button>
+      ) : (
+        ""
+      )}
       {subsData.map((item) => (
         <Card key={item.id}>
           <span>{item.name}</span>

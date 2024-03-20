@@ -140,10 +140,10 @@ const DashboardSuperAdmin = () => {
         }
       );
       localStorage.removeItem("userToken");
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       localStorage.removeItem("userToken");
-      navigate("/");
+      navigate("/login");
     }
   };
 
@@ -166,6 +166,7 @@ const DashboardSuperAdmin = () => {
                 <Th>subscription</Th>
                 <Th>Price</Th>
                 <Th>Status</Th>
+                <Th>Token</Th>
                 <Th>Start Date</Th>
                 <Th>Expired Date</Th>
                 <Th>Action</Th>
@@ -179,6 +180,7 @@ const DashboardSuperAdmin = () => {
                   <Td>{item.subscription.name}</Td>
                   <Td>{item.subscription.price}</Td>
                   <Td>{item.status}</Td>
+                  <Td>{item.order_id}</Td>
                   <Td>{item.created_at}</Td>
                   <Td>{item.user.subscription_expiry_date}</Td>
                   <Td alignItems={"center"}>

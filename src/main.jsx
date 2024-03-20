@@ -8,6 +8,9 @@ import LoginPage from "./pages/LoginPage";
 import DashboardAdminSekolah from "./pages/admin-sekolah/DashboardAdminSekolah";
 import DashboardSuperAdmin from "./pages/super-admin/DashboardSuperAdmin";
 import SubscriptionPage from "./pages/super-admin/SubscriptionPage";
+import RegisterPage from "./pages/RegisterPage";
+import LinkPage from "./pages/admin-sekolah/LinkPage";
+import MonitoringPage from "./pages/admin-sekolah/MonitoringPage";
 
 const router = createBrowserRouter([
   {
@@ -15,8 +18,20 @@ const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
+    path: "/admin-sekolah/subs",
+    element: <HomePage />,
+  },
+  {
     path: "/admin-sekolah/dashboard",
     element: <DashboardAdminSekolah />,
+  },
+  {
+    path: "/admin-sekolah/link",
+    element: <LinkPage />,
+  },
+  {
+    path: "/admin-sekolah/monitoring",
+    element: <MonitoringPage />,
   },
   {
     path: "/super-admin/dashboard",
@@ -29,6 +44,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
 ]);
 

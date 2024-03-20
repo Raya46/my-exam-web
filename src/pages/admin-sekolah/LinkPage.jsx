@@ -21,21 +21,22 @@ import EditUserModal from "../../components/EditUserModal";
 import AddUserModal from "../../components/AddUserModal";
 import { useNavigate } from "react-router-dom";
 
-const DashboardAdminSekolah = () => {
+const LinkPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [linkName, setLinkName] = useState("");
+  const [linkTitle, setLinkTitle] = useState("");
+  const [linkStatus, setLinkStatus] = useState("");
+  const [kelasJurusan, setKelasJurusan] = useState("");
+  const [selectedLink, setSelectedLink] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
 
   const getSubsData = async () => {
     try {
       const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}admin-sekolah`, {
+      const response = await axios.get(`${BASE_API_URL}links`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
       setsubsData(response.data.data);
@@ -48,8 +49,8 @@ const DashboardAdminSekolah = () => {
     try {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.post(
-        `${BASE_API_URL}admin-sekolah/post`,
-        { name, password },
+        `${BASE_API_URL}links/post`,
+        { linkName, linkTitle, linkStatus, kelasJurusan },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
       if (response.data.data === "berhasil") {
@@ -84,25 +85,27 @@ const DashboardAdminSekolah = () => {
     getSubsData();
   }, []);
 
-  const handleCardPress = (user) => {
-    setSelectedUser(user);
-    setName(user.name);
-    setPassword("");
-    setToken(user.token)
+  const handleCardPress = (data) => {
+    setSelectedLink(data)
+    setLinkName(data.link_name)
+    setLinkTitle(data.link_title)
+    setLinkStatus(data.link_status)
+    setKelasJurusan(data.kelas_jurusan)
     setModalEdit(true);
   };
 
   const handleModalOpen = () =>{
-    setName("");
-    setPassword("");
-    setToken("")
+    setLinkName("")
+    setLinkTitle("")
+    setLinkStatus("")
+    setKelasJurusan("")
     setModalOpen(true);
   }
 
   const deleteUser = async (id) => {
     try {
       const userToken = localStorage.getItem("userToken");
-      await axios.delete(`${BASE_API_URL}admin-sekolah/${id}`, {
+      await axios.delete(`${BASE_API_URL}links/${id}`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
       getSubsData();
@@ -127,8 +130,8 @@ const DashboardAdminSekolah = () => {
     try {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.put(
-        `${BASE_API_URL}admin-sekolah/${id}`,
-        { name, password },
+        `${BASE_API_URL}links/${id}`,
+        { linkName, linkTitle, linkStatus, kelasJurusan },
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
       if (response.data.data === "success") {
@@ -218,7 +221,7 @@ const DashboardAdminSekolah = () => {
         <EditUserModal
           modalEdit={modalEdit}
           setModalEdit={setModalEdit}
-          selectedUser={selectedUser}
+          selectedUser={selectedLink}
           name={name}
           setName={setName}
           password={password}
@@ -245,4 +248,4 @@ const DashboardAdminSekolah = () => {
   );
 };
 
-export default DashboardAdminSekolah;
+export default LinkPage;
