@@ -17,18 +17,20 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
-import EditUserModal from "../../components/EditUserModal";
-import AddUserModal from "../../components/AddUserModal";
 import { useNavigate } from "react-router-dom";
+import TesEditModal from "../../components/TesEditModal";
+import TesAddModal from "../../components/TesAddModal";
 
 const LinkPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
-  const [linkName, setLinkName] = useState("");
-  const [linkTitle, setLinkTitle] = useState("");
-  const [linkStatus, setLinkStatus] = useState("");
-  const [kelasJurusan, setKelasJurusan] = useState("");
+  const [fields, setFields] = useState({
+    link_name: "",
+    link_title: "",
+    link_status: "",
+    kelas_jurusan: "",
+  });
   const [selectedLink, setSelectedLink] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
@@ -50,14 +52,15 @@ const LinkPage = () => {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.post(
         `${BASE_API_URL}links/post`,
-        { linkName, linkTitle, linkStatus, kelasJurusan },
+        fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-      if (response.data.data === "berhasil") {
+      console.log(response.data)
+      if (response.data.data === "success") {
         setModalOpen(false);
         getSubsData();
         toast({
-          title: "Add user berhasil",
+          title: "Add user success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -86,21 +89,25 @@ const LinkPage = () => {
   }, []);
 
   const handleCardPress = (data) => {
-    setSelectedLink(data)
-    setLinkName(data.link_name)
-    setLinkTitle(data.link_title)
-    setLinkStatus(data.link_status)
-    setKelasJurusan(data.kelas_jurusan)
+    setSelectedLink(data);
+    setFields({
+      link_name: data.link_name,
+      link_title: data.link_title,
+      link_status: data.link_status,
+      kelas_jurusan: data.kelas_jurusan,
+    });
     setModalEdit(true);
   };
 
-  const handleModalOpen = () =>{
-    setLinkName("")
-    setLinkTitle("")
-    setLinkStatus("")
-    setKelasJurusan("")
+  const handleModalOpen = () => {
+    setFields({
+      link_name: "",
+      link_title: "",
+      link_status: "",
+      kelas_jurusan: "",
+    });
     setModalOpen(true);
-  }
+  };
 
   const deleteUser = async (id) => {
     try {
@@ -110,7 +117,7 @@ const LinkPage = () => {
       });
       getSubsData();
       toast({
-        title: "Hapus user berhasil",
+        title: "Hapus user success",
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -129,16 +136,14 @@ const LinkPage = () => {
   const editUser = async (id) => {
     try {
       const userToken = localStorage.getItem("userToken");
-      const response = await axios.put(
-        `${BASE_API_URL}links/${id}`,
-        { linkName, linkTitle, linkStatus, kelasJurusan },
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
+      const response = await axios.put(`${BASE_API_URL}links/${id}`, fields, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
       if (response.data.data === "success") {
         setModalEdit(false);
         getSubsData();
         toast({
-          title: "Edit user berhasil",
+          title: "Edit user success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -195,9 +200,10 @@ const LinkPage = () => {
             <Thead>
               <Tr>
                 <Th>No</Th>
-                <Th>Name</Th>
-                <Th>Sekolah</Th>
-                <Th>Token</Th>
+                <Th>link url</Th>
+                <Th>link title</Th>
+                <Th>link status</Th>
+                <Th>kelas jurusan</Th>
                 <Th>Action</Th>
               </Tr>
             </Thead>
@@ -205,9 +211,10 @@ const LinkPage = () => {
               {subsData.map((item, index) => (
                 <Tr key={item.id}>
                   <Td>{index + 1}</Td>
-                  <Td>{item.name}</Td>
-                  <Td>{item.sekolah}</Td>
-                  <Td>{item.token ?? "not member"}</Td>
+                  <Td>{item.link_name}</Td>
+                  <Td>{item.link_title}</Td>
+                  <Td>{item.link_status}</Td>
+                  <Td>{item.kelas_jurusan}</Td>
                   <Td alignItems={"center"}>
                     <Button onClick={() => handleCardPress(item)}>Edit</Button>
                     <Button onClick={() => deleteUser(item.id)}>Delete</Button>
@@ -217,30 +224,21 @@ const LinkPage = () => {
             </Tbody>
           </Table>
         </TableContainer>
-        {/* Edit User Modal */}
-        <EditUserModal
+        <TesEditModal
           modalEdit={modalEdit}
           setModalEdit={setModalEdit}
           selectedUser={selectedLink}
-          name={name}
-          setName={setName}
-          password={password}
-          setPassword={setPassword}
-          token={token}
-          setToken={setToken}
+          fields={fields}
+          setFields={setFields}
           editUser={editUser}
         />
 
         {/* Add User Modal */}
-        <AddUserModal
+        <TesAddModal
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
-          name={name}
-          setName={setName}
-          password={password}
-          setPassword={setPassword}
-          token={token}
-          setToken={setToken}
+          fields={fields}
+          setFields={setFields}
           addUser={addUser}
         />
       </Box>

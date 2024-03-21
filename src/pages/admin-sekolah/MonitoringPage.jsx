@@ -17,17 +17,19 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
-import EditUserModal from "../../components/EditUserModal";
-import AddUserModal from "../../components/AddUserModal";
 import { useNavigate } from "react-router-dom";
+import TesEditModal from "../../components/TesEditModal";
 
 const MonitoringPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
-  const [statusProgress, setStatusProgress] = useState("");
+  const [fields, setFields] = useState({
+    user_id: 0,
+    link_id: 0,
+    status_progress: "",
+  });
   const [selectedLink, setSelectedLink] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
 
   const getSubsData = async () => {
@@ -42,19 +44,20 @@ const MonitoringPage = () => {
     }
   };
 
-  const editUser = async (id, user_id, link_id) => {
+  const editUser = async (id) => {
     try {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.put(
         `${BASE_API_URL}progress/${id}`,
-        { user_id: user_id, link_id: link_id, status_progress: statusProgress },
+        fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
+      console.log(response.data)
       if (response.data.data === "success") {
         setModalEdit(false);
         getSubsData();
         toast({
-          title: "Edit user berhasil",
+          title: "Edit user success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -83,8 +86,12 @@ const MonitoringPage = () => {
   }, []);
 
   const handleCardPress = (data) => {
-    setSelectedLink(data.link)
-    setStatusProgress(data.status_progress)
+    setSelectedLink(data.link);
+    setFields({
+        user_id: data.user_id,
+        link_id: data.link_id,
+        status_progress: data.status_progress,
+    })
     setModalEdit(true);
   };
 
@@ -135,7 +142,6 @@ const MonitoringPage = () => {
                   <Td>{item.status_progress}</Td>
                   <Td alignItems={"center"}>
                     <Button onClick={() => handleCardPress(item)}>Edit</Button>
-                    <Button onClick={() => deleteUser(item.id)}>Delete</Button>
                   </Td>
                 </Tr>
               ))}
@@ -143,16 +149,12 @@ const MonitoringPage = () => {
           </Table>
         </TableContainer>
         {/* Edit User Modal */}
-        <EditUserModal
+        <TesEditModal
           modalEdit={modalEdit}
           setModalEdit={setModalEdit}
           selectedUser={selectedLink}
-          name={name}
-          setName={setName}
-          password={password}
-          setPassword={setPassword}
-          token={token}
-          setToken={setToken}
+          fields={fields}
+          setFields={setFields}
           editUser={editUser}
         />
       </Box>

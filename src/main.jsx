@@ -6,11 +6,12 @@ import "./index.css";
 import HomePage from "./pages/admin-sekolah/HomePage";
 import LoginPage from "./pages/LoginPage";
 import DashboardAdminSekolah from "./pages/admin-sekolah/DashboardAdminSekolah";
-import DashboardSuperAdmin from "./pages/super-admin/DashboardSuperAdmin";
 import SubscriptionPage from "./pages/super-admin/SubscriptionPage";
 import RegisterPage from "./pages/RegisterPage";
 import LinkPage from "./pages/admin-sekolah/LinkPage";
 import MonitoringPage from "./pages/admin-sekolah/MonitoringPage";
+import DashboardSuperAdmin from "./pages/super-admin/DashboardSuperAdmin";
+import ListPaymentPage from "./pages/super-admin/ListPaymentPage";
 
 const router = createBrowserRouter([
   {
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
-    path: "/admin-sekolah/subs",
+    path: "/admin-sekolah/subscription",
     element: <HomePage />,
   },
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
   {
     path: "/super-admin/subscription",
     element: <SubscriptionPage />,
+  },
+  {
+    path: "/super-admin/list-pay",
+    element: <ListPaymentPage />,
   },
   {
     path: "/login",

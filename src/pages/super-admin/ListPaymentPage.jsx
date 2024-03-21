@@ -19,68 +19,30 @@ import {
 import BASE_API_URL from "../../constant/ip";
 import { useNavigate } from "react-router-dom";
 import TesEditModal from "../../components/TesEditModal";
-import TesAddModal from "../../components/TesAddModal";
 
-const DashboardAdminSekolah = () => {
+const ListPaymentPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
   const [fields, setFields] = useState({
     name: "",
-    password: "",
-    token: "",
-    role: "siswa",
-    kelas_jurusan: ""
+    status: "",
+    created_at: "",
+    subscription_expiry_date: "",
   });
   const [selectedUser, setSelectedUser] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
 
   const getSubsData = async () => {
     try {
       const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}admin-sekolah`, {
+      const response = await axios.get(`${BASE_API_URL}super-admin/list-pay`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
+      console.log(response.data.data);
       setsubsData(response.data.data);
     } catch (error) {
       console.error("Error fetching subscription data:", error);
-    }
-  };
-
-  const addUser = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.post(
-        `${BASE_API_URL}admin-sekolah/post`,
-        fields,
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
-      if (response.data.data === "success") {
-        setModalOpen(false);
-        getSubsData();
-        toast({
-          title: "Add user success",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Name atau Password salah",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      console.error("Error adding user:", error);
-      toast({
-        title: "Error adding user",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
     }
   };
 
@@ -88,32 +50,21 @@ const DashboardAdminSekolah = () => {
     getSubsData();
   }, []);
 
-  const handleCardPress = (user) => {
-    setSelectedUser(user);
+  const handleCardPress = (data) => {
+    setSelectedUser(data);
     setFields({
-      name: user.name,
-      password: user.password,
-      token: user.token,
-      role: user.role,
-      kelas_jurusan: user.kelas_jurusan
+      name: data.user.name,
+      status: data.status,
+      created_at: data.created_at,
+      subscription_expiry_date: data.user.subscription_expiry_date,
     });
     setModalEdit(true);
-  };
-
-  const handleModalOpen = () => {
-    setFields({
-      name: "",
-      password: "",
-      role: "",
-      kelas_jurusan: ""
-    });
-    setModalOpen(true);
   };
 
   const deleteUser = async (id) => {
     try {
       const userToken = localStorage.getItem("userToken");
-      await axios.delete(`${BASE_API_URL}admin-sekolah/${id}`, {
+      await axios.delete(`${BASE_API_URL}super-admin/${id}`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
       getSubsData();
@@ -138,28 +89,10 @@ const DashboardAdminSekolah = () => {
     try {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.put(
-        `${BASE_API_URL}admin-sekolah/${id}`,
+        `${BASE_API_URL}super-admin/${id}`,
         fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-      console.log(response.data);
-      if (response.data.data === "success") {
-        setModalEdit(false);
-        getSubsData();
-        toast({
-          title: "Edit user success",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Edit user gagal",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
     } catch (error) {
       console.error("Error editing user:", error);
       toast({
@@ -195,7 +128,6 @@ const DashboardAdminSekolah = () => {
       <Box flex="1" bg="gray.100" p={6}>
         <Flex alignItems="center" mb={6}>
           <Heading size="md">Dashboard</Heading>
-          <Button onClick={() => handleModalOpen()}>+</Button>
           <Button onClick={() => handleLogout()}>logout</Button>
           <Spacer />
         </Flex>
@@ -205,9 +137,12 @@ const DashboardAdminSekolah = () => {
               <Tr>
                 <Th>No</Th>
                 <Th>Name</Th>
-                <Th>Sekolah</Th>
-                <Th>Kelas Jurusan</Th>
+                <Th>subscription</Th>
+                <Th>Price</Th>
+                <Th>Status</Th>
                 <Th>Token</Th>
+                <Th>Start Date</Th>
+                <Th>Expired Date</Th>
                 <Th>Action</Th>
               </Tr>
             </Thead>
@@ -215,10 +150,13 @@ const DashboardAdminSekolah = () => {
               {subsData.map((item, index) => (
                 <Tr key={item.id}>
                   <Td>{index + 1}</Td>
-                  <Td>{item.name}</Td>
-                  <Td>{item.sekolah}</Td>
-                  <Td>{item.kelas_jurusan}</Td>
-                  <Td>{item.token ?? "not member"}</Td>
+                  <Td>{item.user.name}</Td>
+                  <Td>{item.subscription.name}</Td>
+                  <Td>{item.subscription.price}</Td>
+                  <Td>{item.status}</Td>
+                  <Td>{item.order_id}</Td>
+                  <Td>{item.created_at}</Td>
+                  <Td>{item.user.subscription_expiry_date}</Td>
                   <Td alignItems={"center"}>
                     <Button onClick={() => handleCardPress(item)}>Edit</Button>
                     <Button onClick={() => deleteUser(item.id)}>Delete</Button>
@@ -238,17 +176,9 @@ const DashboardAdminSekolah = () => {
           editUser={editUser}
         />
 
-        {/* Add User Modal */}
-        <TesAddModal
-          modalOpen={modalOpen}
-          setModalOpen={setModalOpen}
-          fields={fields}
-          setFields={setFields}
-          addUser={addUser}
-        />
       </Box>
     </Flex>
   );
 };
 
-export default DashboardAdminSekolah;
+export default ListPaymentPage;

@@ -8,7 +8,6 @@ import {
   ModalOverlay,
   ModalHeader,
   Card,
-  Input,
   Button,
   Text,
 } from "@chakra-ui/react";
@@ -62,15 +61,12 @@ const HomePage = () => {
         window.snap.pay(data.snap_token, {
           onSuccess: function (result) {
             console.log(result);
-            window.location.reload();
           },
           onPending: function (result) {
             console.log(result);
-            window.location.reload();
           },
           onError: function (result) {
             console.log(result);
-            window.location.reload();
           },
         });
       } else {

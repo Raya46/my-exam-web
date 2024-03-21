@@ -17,18 +17,20 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
-import EditUserModal from "../../components/EditUserModal";
-import AddUserModal from "../../components/AddUserModal";
 import { useNavigate } from "react-router-dom";
+import TesEditModal from "../../components/TesEditModal";
+import TesAddModal from "../../components/TesAddModal";
 
 const DashboardSuperAdmin = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
-  const [name, setName] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [subscriptionExpiryDate, setSubscriptionExpiryDate] = useState("");
+  const [fields, setFields] = useState({
+    name: "",
+    password: "",
+    token: "",
+    role: "admin sekolah",
+  });
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
@@ -39,7 +41,6 @@ const DashboardSuperAdmin = () => {
       const response = await axios.get(`${BASE_API_URL}super-admin`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
-      console.log(response.data.data)
       setsubsData(response.data.data);
     } catch (error) {
       console.error("Error fetching subscription data:", error);
@@ -51,9 +52,26 @@ const DashboardSuperAdmin = () => {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.post(
         `${BASE_API_URL}super-admin/post`,
-        { name, paymentStatus, startDate,subscriptionExpiryDate },
+        fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
+      if (response.data.data === "success") {
+        setModalOpen(false);
+        getSubsData();
+        toast({
+          title: "Add user success",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Name atau Password salah",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
       console.error("Error adding user:", error);
       toast({
@@ -69,22 +87,25 @@ const DashboardSuperAdmin = () => {
     getSubsData();
   }, []);
 
-  const handleCardPress = (data) => {
-    setSelectedUser(data);
-    setName(data.user.name);
-    setPaymentStatus(data.status);
-    setStartDate(data.created_at);
-    setSubscriptionExpiryDate(data.user.subscription_expiry_date);
+  const handleCardPress = (user) => {
+    setSelectedUser(user);
+    setFields({
+      name: user.name,
+      password: user.password,
+      token: user.token,
+      role: user.role,
+    });
     setModalEdit(true);
   };
 
-  const handleModalOpen = () =>{
-    setName("");
-    setPaymentStatus("");
-    setStartDate("");
-    setSubscriptionExpiryDate("");
+  const handleModalOpen = () => {
+    setFields({
+      name: "",
+      password: "",
+      role: "",
+    });
     setModalOpen(true);
-  }
+  };
 
   const deleteUser = async (id) => {
     try {
@@ -94,7 +115,7 @@ const DashboardSuperAdmin = () => {
       });
       getSubsData();
       toast({
-        title: "Hapus user berhasil",
+        title: "Hapus user success",
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -115,9 +136,27 @@ const DashboardSuperAdmin = () => {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.put(
         `${BASE_API_URL}super-admin/${id}`,
-        { name, paymentStatus, startDate,subscriptionExpiryDate },
+        fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
+      console.log(response.data);
+      if (response.data.data === "success") {
+        setModalEdit(false);
+        getSubsData();
+        toast({
+          title: "Edit user success",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Edit user gagal",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
       console.error("Error editing user:", error);
       toast({
@@ -163,12 +202,8 @@ const DashboardSuperAdmin = () => {
               <Tr>
                 <Th>No</Th>
                 <Th>Name</Th>
-                <Th>subscription</Th>
-                <Th>Price</Th>
-                <Th>Status</Th>
+                <Th>Sekolah</Th>
                 <Th>Token</Th>
-                <Th>Start Date</Th>
-                <Th>Expired Date</Th>
                 <Th>Action</Th>
               </Tr>
             </Thead>
@@ -176,13 +211,9 @@ const DashboardSuperAdmin = () => {
               {subsData.map((item, index) => (
                 <Tr key={item.id}>
                   <Td>{index + 1}</Td>
-                  <Td>{item.user.name}</Td>
-                  <Td>{item.subscription.name}</Td>
-                  <Td>{item.subscription.price}</Td>
-                  <Td>{item.status}</Td>
-                  <Td>{item.order_id}</Td>
-                  <Td>{item.created_at}</Td>
-                  <Td>{item.user.subscription_expiry_date}</Td>
+                  <Td>{item.name}</Td>
+                  <Td>{item.sekolah}</Td>
+                  <Td>{item.token ?? "not member"}</Td>
                   <Td alignItems={"center"}>
                     <Button onClick={() => handleCardPress(item)}>Edit</Button>
                     <Button onClick={() => deleteUser(item.id)}>Delete</Button>
@@ -193,33 +224,21 @@ const DashboardSuperAdmin = () => {
           </Table>
         </TableContainer>
         {/* Edit User Modal */}
-        <EditUserModal
+        <TesEditModal
           modalEdit={modalEdit}
           setModalEdit={setModalEdit}
           selectedUser={selectedUser}
-          name={name}
-          setName={setName}
-          subscriptionExpiryDate={subscriptionExpiryDate}
-          setSubscriptionExpiryDate={setSubscriptionExpiryDate}
-          paymentStatus={paymentStatus}
-          setPaymentStatus={setPaymentStatus}
-          startDate={startDate}
-          setStartDate={setStartDate}
+          fields={fields}
+          setFields={setFields}
           editUser={editUser}
         />
 
         {/* Add User Modal */}
-        <AddUserModal
+        <TesAddModal
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
-          name={name}
-          setName={setName}
-          paymentStatus={paymentStatus}
-          setPaymentStatus={setPaymentStatus}
-          startDate={startDate}
-          setStartDate={setStartDate}
-          subscriptionExpiryDate={subscriptionExpiryDate}
-          setSubscriptionExpiryDate={setSubscriptionExpiryDate}
+          fields={fields}
+          setFields={setFields}
           addUser={addUser}
         />
       </Box>

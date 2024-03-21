@@ -17,20 +17,23 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
-import EditUserModal from "../../components/EditUserModal";
-import AddUserModal from "../../components/AddUserModal";
 import { useNavigate } from "react-router-dom";
+import TesEditModal from "../../components/TesEditModal";
+import TesAddModal from "../../components/TesAddModal";
 
 const SubscriptionPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState(0);
-  const [currency, setCurrency] = useState("");
-  const [invoicePeriod, setInvoicePeriod] = useState(0);
-  const [invoiceInterval, setInvoiceInterval] = useState("");
+  const [fields, setFields] = useState({
+    name: "",
+    description: "",
+    price: 0,
+    currency: "",
+    invoice_interval: "",
+    invoice_period: "",
+  });
+
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
@@ -41,7 +44,7 @@ const SubscriptionPage = () => {
       const response = await axios.get(`${BASE_API_URL}subscription`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
-      console.log(response.data.data)
+      console.log(response.data.data);
       setsubsData(response.data.data);
     } catch (error) {
       console.error("Error fetching subscription data:", error);
@@ -53,7 +56,7 @@ const SubscriptionPage = () => {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.post(
         `${BASE_API_URL}subscription/post`,
-        { name, description, price, currency, invoicePeriod, invoiceInterval },
+        fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
     } catch (error) {
@@ -73,24 +76,28 @@ const SubscriptionPage = () => {
 
   const handleCardPress = (data) => {
     setSelectedUser(data);
-    setName(data.name);
-    setDescription(data.description)
-    setPrice(data.price)
-    setCurrency(data.currency)
-    setInvoiceInterval(data.invoice_interval)
-    setInvoicePeriod(data.invoice_period)
+    setFields({
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      invoice_interval: data.invoice_interval,
+      invoice_period: data.invoice_period,
+      currency: data.currency,
+    });
     setModalEdit(true);
   };
 
-  const handleModalOpen = () =>{
-    setName("");
-    setDescription("")
-    setPrice(0)
-    setCurrency("")
-    setInvoiceInterval("")
-    setInvoicePeriod(0)
+  const handleModalOpen = () => {
+    setFields({
+      name: "",
+      description: "",
+      price: "",
+      invoice_period: "",
+      invoice_interval: "",
+      currency: 0,
+    });
     setModalOpen(true);
-  }
+  };
 
   const deleteUser = async (id) => {
     try {
@@ -100,7 +107,7 @@ const SubscriptionPage = () => {
       });
       getSubsData();
       toast({
-        title: "Hapus user berhasil",
+        title: "Hapus user success",
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -121,14 +128,14 @@ const SubscriptionPage = () => {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.put(
         `${BASE_API_URL}subscription/${id}`,
-        { name, description, price, currency, invoicePeriod, invoiceInterval },
+        fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
       if (response.data.data === "success") {
         setModalEdit(false);
         getSubsData();
         toast({
-          title: "Edit user berhasil",
+          title: "Edit user success",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -163,10 +170,10 @@ const SubscriptionPage = () => {
         }
       );
       localStorage.removeItem("userToken");
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       localStorage.removeItem("userToken");
-      navigate("/");
+      navigate("/login");
     }
   };
 
@@ -214,41 +221,21 @@ const SubscriptionPage = () => {
           </Table>
         </TableContainer>
         {/* Edit User Modal */}
-        <EditUserModal
+        <TesEditModal
           modalEdit={modalEdit}
           setModalEdit={setModalEdit}
           selectedUser={selectedUser}
-          name={name}
-          setName={setName}
-          description={description}
-          setDescription={setDescription}
-          price={price}
-          setPrice={setPrice}
-          currency={currency}
-          setCurrency={setCurrency}
-          invoicePeriod={invoicePeriod}
-          setInvoicePeriod={setInvoicePeriod}
-          invoiceInterval={invoiceInterval}
-          setInvoiceInterval={setInvoiceInterval}
+          fields={fields}
+          setFields={setFields}
           editUser={editUser}
         />
 
         {/* Add User Modal */}
-        <AddUserModal
+        <TesAddModal
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
-          name={name}
-          setName={setName}
-          description={description}
-          setDescription={setDescription}
-          price={price}
-          setPrice={setPrice}
-          currency={currency}
-          setCurrency={setCurrency}
-          invoicePeriod={invoicePeriod}
-          setInvoicePeriod={setInvoicePeriod}
-          invoiceInterval={invoiceInterval}
-          setInvoiceInterval={setInvoiceInterval}
+          fields={fields}
+          setFields={setFields}
           addUser={addUser}
         />
       </Box>
