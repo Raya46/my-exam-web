@@ -20,6 +20,7 @@ import BASE_API_URL from "../../constant/ip";
 import { useNavigate } from "react-router-dom";
 import TesEditModal from "../../components/TesEditModal";
 import TesAddModal from "../../components/TesAddModal";
+import MainAdmin from "./Main";
 
 const LinkPage = () => {
   const toast = useToast();
@@ -188,63 +189,67 @@ const LinkPage = () => {
   };
 
   return (
-    <Flex>
-      {/* Main Content */}
-      <Box flex="1" bg="gray.100" p={6}>
-        <Flex alignItems="center" mb={6}>
-          <Heading size="md">Dashboard</Heading>
-          <Button onClick={() => handleModalOpen()}>+</Button>
-          <Button onClick={() => handleLogout()}>logout</Button>
-          <Spacer />
-        </Flex>
-        <TableContainer>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>No</Th>
-                <Th>link url</Th>
-                <Th>link title</Th>
-                <Th>link status</Th>
-                <Th>kelas jurusan</Th>
-                <Th>Action</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {subsData.map((item, index) => (
-                <Tr key={item.id}>
-                  <Td>{index + 1}</Td>
-                  <Td>{item.link_name}</Td>
-                  <Td>{item.link_title}</Td>
-                  <Td>{item.link_status}</Td>
-                  <Td>{item.kelas_jurusan}</Td>
-                  <Td alignItems={"center"}>
-                    <Button onClick={() => handleCardPress(item)}>Edit</Button>
-                    <Button onClick={() => deleteUser(item.id)}>Delete</Button>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-        <TesEditModal
-          modalEdit={modalEdit}
-          setModalEdit={setModalEdit}
-          selectedUser={selectedLink}
-          fields={fields}
-          setFields={setFields}
-          editUser={editUser}
-        />
+    <MainAdmin>
 
-        {/* Add User Modal */}
-        <TesAddModal
-          modalOpen={modalOpen}
-          setModalOpen={setModalOpen}
-          fields={fields}
-          setFields={setFields}
-          addUser={addUser}
-        />
-      </Box>
-    </Flex>
+      <Flex>
+        {/* Main Content */}
+        <Box flex="1" bg="gray.100" p={6}>
+          <Flex alignItems="center" mb={6}>
+            <Heading size="md">Dashboard</Heading>
+            <Button onClick={() => handleModalOpen()}>+</Button>
+            <Button onClick={() => handleLogout()}>logout</Button>
+            <Spacer />
+          </Flex>
+          <TableContainer>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>No</Th>
+                  <Th>link url</Th>
+                  <Th>link title</Th>
+                  <Th>link status</Th>
+                  <Th>kelas jurusan</Th>
+                  <Th>Action</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {subsData.map((item, index) => (
+                  <Tr key={item.id}>
+                    <Td>{index + 1}</Td>
+                    <Td>{item.link_name}</Td>
+                    <Td>{item.link_title}</Td>
+                    <Td>{item.link_status}</Td>
+                    <Td>{item.kelas_jurusan}</Td>
+                    <Td alignItems={"center"}>
+                      <Button onClick={() => handleCardPress(item)}>Edit</Button>
+                      <Button onClick={() => deleteUser(item.id)}>Delete</Button>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+          <TesEditModal
+            modalEdit={modalEdit}
+            setModalEdit={setModalEdit}
+            selectedUser={selectedLink}
+            fields={fields}
+            setFields={setFields}
+            editUser={editUser}
+          />
+
+          {/* Add User Modal */}
+          <TesAddModal
+            modalOpen={modalOpen}
+            setModalOpen={setModalOpen}
+            fields={fields}
+            setFields={setFields}
+            addUser={addUser}
+          />
+        </Box>
+      </Flex>
+    </MainAdmin>
+
   );
 };
 

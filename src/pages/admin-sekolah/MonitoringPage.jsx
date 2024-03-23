@@ -19,6 +19,7 @@ import {
 import BASE_API_URL from "../../constant/ip";
 import { useNavigate } from "react-router-dom";
 import TesEditModal from "../../components/TesEditModal";
+import MainAdmin from "./Main";
 
 const MonitoringPage = () => {
   const toast = useToast();
@@ -88,9 +89,9 @@ const MonitoringPage = () => {
   const handleCardPress = (data) => {
     setSelectedLink(data.link);
     setFields({
-        user_id: data.user_id,
-        link_id: data.link_id,
-        status_progress: data.status_progress,
+      user_id: data.user_id,
+      link_id: data.link_id,
+      status_progress: data.status_progress,
     })
     setModalEdit(true);
   };
@@ -114,53 +115,54 @@ const MonitoringPage = () => {
   };
 
   return (
-    <Flex>
-      {/* Main Content */}
-      <Box flex="1" bg="gray.100" p={6}>
-        <Flex alignItems="center" mb={6}>
-          <Heading size="md">Dashboard</Heading>
-          <Button onClick={() => handleLogout()}>logout</Button>
-          <Spacer />
-        </Flex>
-        <TableContainer>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>No</Th>
-                <Th>Name</Th>
-                <Th>Kelas Jurusan</Th>
-                <Th>Exam Title</Th>
-                <Th>Status</Th>
-                <Th>Action</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {subsData.map((item, index) => (
-                <Tr key={item.id}>
-                  <Td>{index + 1}</Td>
-                  <Td>{item.user.name}</Td>
-                  <Td>{item.user.kelas_jurusan}</Td>
-                  <Td>{item.link.link_title}</Td>
-                  <Td>{item.status_progress}</Td>
-                  <Td alignItems={"center"}>
-                    <Button onClick={() => handleCardPress(item)}>Edit</Button>
-                  </Td>
+    <MainAdmin>
+      <Flex>
+        {/* Main Content */}
+        <Box flex="1" bg="gray.100" p={6}>
+          <Flex alignItems="center" mb={6}>
+            <Heading size="md">Dashboard</Heading>
+            <Button onClick={() => handleLogout()}>logout</Button>
+            <Spacer />
+          </Flex>
+          <TableContainer>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>No</Th>
+                  <Th>Name</Th>
+                  <Th>Exam Title</Th>
+                  <Th>Status</Th>
+                  <Th>Action</Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-        {/* Edit User Modal */}
-        <TesEditModal
-          modalEdit={modalEdit}
-          setModalEdit={setModalEdit}
-          selectedUser={selectedLink}
-          fields={fields}
-          setFields={setFields}
-          editUser={editUser}
-        />
-      </Box>
-    </Flex>
+              </Thead>
+              <Tbody>
+                {subsData.map((item, index) => (
+                  <Tr key={item.id}>
+                    <Td>{index + 1}</Td>
+                    <Td>{item.user.name}</Td>
+                    <Td>{item.link.link_title}</Td>
+                    <Td>{item.status_progress}</Td>
+                    <Td alignItems={"center"}>
+                      <Button onClick={() => handleCardPress(item)}>Edit</Button>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+          {/* Edit User Modal */}
+          <TesEditModal
+            modalEdit={modalEdit}
+            setModalEdit={setModalEdit}
+            selectedUser={selectedLink}
+            fields={fields}
+            setFields={setFields}
+            editUser={editUser}
+          />
+        </Box>
+      </Flex>
+    </MainAdmin>
+
   );
 };
 
