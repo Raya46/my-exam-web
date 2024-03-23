@@ -12,11 +12,16 @@ import LinkPage from "./pages/admin-sekolah/LinkPage";
 import MonitoringPage from "./pages/admin-sekolah/MonitoringPage";
 import DashboardSuperAdmin from "./pages/super-admin/DashboardSuperAdmin";
 import ListPaymentPage from "./pages/super-admin/ListPaymentPage";
+import Main from "./pages/admin-sekolah/Main";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />,
+  },
+  {
+    path: "/admin-sekolah/",
+    element: <Main />,
   },
   {
     path: "/admin-sekolah/subscription",
