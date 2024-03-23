@@ -69,7 +69,7 @@ function MainAdmin(props) {
           </div>
           <button onClick={() => handleLogout()}>logout</button>
         </div>
-        {subsData === null || Object.keys(subsData).length === 0 ? (
+        {subsData === null ? (
           <HomePage/>
         ) : (
           <div className="w-5/6 h-full bg-white">{props.children}</div>

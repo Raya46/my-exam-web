@@ -15,6 +15,7 @@ import {
   Td,
   TableContainer,
   Spacer,
+  Input
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +24,7 @@ import TesAddModal from "../../components/TesAddModal";
 import MainAdmin from "./Main";
 
 const DashboardAdminSekolah = () => {
+    const [file, setFile] = useState(null);
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
@@ -31,7 +33,7 @@ const DashboardAdminSekolah = () => {
     password: "",
     token: "",
     role: "",
-    kelas_jurusan: ""
+    kelas_jurusan: "",
   });
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -96,7 +98,7 @@ const DashboardAdminSekolah = () => {
       password: user.password,
       token: user.token,
       role: user.role,
-      kelas_jurusan: user.kelas_jurusan
+      kelas_jurusan: user.kelas_jurusan,
     });
     setModalEdit(true);
   };
@@ -106,8 +108,8 @@ const DashboardAdminSekolah = () => {
       name: "",
       password: "",
       role: "",
-      token:"USR-",
-      kelas_jurusan: ""
+      token: "USR-",
+      kelas_jurusan: "",
     });
     setModalOpen(true);
   };
@@ -191,9 +193,64 @@ const DashboardAdminSekolah = () => {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const userToken = localStorage.getItem("userToken");
+      const response = await axios.get(
+        `${BASE_API_URL}admin-sekolah/siswa-export`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+          responseType: "blob",
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "siswa.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading user:", error);
+      toast({
+        title: "Error downloading user",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleFileChange = (e) => {
+    // Mengambil file yang dipilih oleh pengguna
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+  };
+
+  const handleImport = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const userToken = localStorage.getItem("userToken");
+      await axios.post(`${BASE_API_URL}admin-sekolah/siswa-import`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      getSubsData()
+      console.log("Data siswa berhasil diimpor!");
+    } catch (error) {
+      console.error("Error importing siswa:", error);
+    }
+  };
+
   return (
     <MainAdmin>
-
       <Flex>
         {/* Main Content */}
         <Box flex="1" bg="gray.100" p={6}>
@@ -201,6 +258,9 @@ const DashboardAdminSekolah = () => {
             <Heading size="md">Dashboard</Heading>
             <Button onClick={() => handleModalOpen()}>+</Button>
             <Button onClick={() => handleLogout()}>logout</Button>
+            <Button onClick={() => handleDownload()}>Download siswa</Button>
+            <Input type="file" onChange={handleFileChange} />
+            <Button onClick={handleImport}>Import Data siswa</Button>
             <Spacer />
           </Flex>
           <TableContainer>
@@ -210,7 +270,7 @@ const DashboardAdminSekolah = () => {
                   <Th>No</Th>
                   <Th>Name</Th>
                   <Th>Sekolah</Th>
-                <Th>Role</Th>
+                  <Th>Role</Th>
                   <Th>Kelas Jurusan</Th>
                   <Th>Token</Th>
                   <Th>Action</Th>
@@ -222,12 +282,16 @@ const DashboardAdminSekolah = () => {
                     <Td>{index + 1}</Td>
                     <Td>{item.name}</Td>
                     <Td>{item.sekolah}</Td>
-                  <Td>{item.role}</Td>
+                    <Td>{item.role}</Td>
                     <Td>{item.kelas_jurusan}</Td>
                     <Td>{item.token ?? "not member"}</Td>
                     <Td alignItems={"center"}>
-                      <Button onClick={() => handleCardPress(item)}>Edit</Button>
-                      <Button onClick={() => deleteUser(item.id)}>Delete</Button>
+                      <Button onClick={() => handleCardPress(item)}>
+                        Edit
+                      </Button>
+                      <Button onClick={() => deleteUser(item.id)}>
+                        Delete
+                      </Button>
                     </Td>
                   </Tr>
                 ))}
