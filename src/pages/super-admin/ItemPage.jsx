@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import TesEditModal from "../../components/TesEditModal";
 import TesAddModal from "../../components/TesAddModal";
 
-const SubscriptionPage = () => {
+const ItemPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
@@ -29,9 +29,7 @@ const SubscriptionPage = () => {
     name: "",
     description: "",
     price: 0,
-    currency: "",
-    invoice_interval: "",
-    invoice_period: "",
+    user_quantity:0
   });
 
   const [selectedUser, setSelectedUser] = useState(null);
@@ -41,13 +39,13 @@ const SubscriptionPage = () => {
   const getSubsData = async () => {
     try {
       const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}subscription`, {
+      const response = await axios.get(`${BASE_API_URL}item`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
       console.log(response.data.data);
       setsubsData(response.data.data);
     } catch (error) {
-      console.error("Error fetching subscription data:", error);
+      console.error("Error fetching item data:", error);
     }
   };
 
@@ -55,7 +53,7 @@ const SubscriptionPage = () => {
     try {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.post(
-        `${BASE_API_URL}subscription/post`,
+        `${BASE_API_URL}item/post`,
         fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
@@ -80,9 +78,7 @@ const SubscriptionPage = () => {
       name: data.name,
       description: data.description,
       price: data.price,
-      invoice_interval: data.invoice_interval,
-      invoice_period: data.invoice_period,
-      currency: data.currency,
+      user_quantity: data.user_quantity
     });
     setModalEdit(true);
   };
@@ -91,10 +87,8 @@ const SubscriptionPage = () => {
     setFields({
       name: "",
       description: "",
-      price: "",
-      invoice_period: "",
-      invoice_interval: "",
-      currency: 0,
+      price: 0,
+      user_quantity: 0
     });
     setModalOpen(true);
   };
@@ -102,7 +96,7 @@ const SubscriptionPage = () => {
   const deleteUser = async (id) => {
     try {
       const userToken = localStorage.getItem("userToken");
-      await axios.delete(`${BASE_API_URL}subscription/${id}`, {
+      await axios.delete(`${BASE_API_URL}item/${id}`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
       getSubsData();
@@ -127,7 +121,7 @@ const SubscriptionPage = () => {
     try {
       const userToken = localStorage.getItem("userToken");
       const response = await axios.put(
-        `${BASE_API_URL}subscription/${id}`,
+        `${BASE_API_URL}item/${id}`,
         fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
@@ -195,9 +189,7 @@ const SubscriptionPage = () => {
                 <Th>Name</Th>
                 <Th>description</Th>
                 <Th>Price</Th>
-                <Th>currency</Th>
-                <Th>invoice_period</Th>
-                <Th>invoice_interval</Th>
+                <Th>user_quantity</Th>
                 <Th>Action</Th>
               </Tr>
             </Thead>
@@ -208,9 +200,7 @@ const SubscriptionPage = () => {
                   <Td>{item.name}</Td>
                   <Td>{item.description}</Td>
                   <Td>{item.price}</Td>
-                  <Td>{item.currency}</Td>
-                  <Td>{item.invoice_period}</Td>
-                  <Td>{item.invoice_interval}</Td>
+                  <Td>{item.user_quantity}</Td>
                   <Td alignItems={"center"}>
                     <Button onClick={() => handleCardPress(item)}>Edit</Button>
                     <Button onClick={() => deleteUser(item.id)}>Delete</Button>
@@ -243,4 +233,4 @@ const SubscriptionPage = () => {
   );
 };
 
-export default SubscriptionPage;
+export default ItemPage;

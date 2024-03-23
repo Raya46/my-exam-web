@@ -128,6 +128,7 @@ const MonitoringPage = () => {
               <Tr>
                 <Th>No</Th>
                 <Th>Name</Th>
+                <Th>Kelas Jurusan</Th>
                 <Th>Exam Title</Th>
                 <Th>Status</Th>
                 <Th>Action</Th>
@@ -138,6 +139,7 @@ const MonitoringPage = () => {
                 <Tr key={item.id}>
                   <Td>{index + 1}</Td>
                   <Td>{item.user.name}</Td>
+                  <Td>{item.user.kelas_jurusan}</Td>
                   <Td>{item.link.link_title}</Td>
                   <Td>{item.status_progress}</Td>
                   <Td alignItems={"center"}>

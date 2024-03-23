@@ -29,7 +29,7 @@ const DashboardSuperAdmin = () => {
     name: "",
     password: "",
     token: "",
-    role: "admin sekolah",
+    sekolah: ""
   });
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -93,7 +93,7 @@ const DashboardSuperAdmin = () => {
       name: user.name,
       password: user.password,
       token: user.token,
-      role: user.role,
+      sekolah: user.sekolah
     });
     setModalEdit(true);
   };
@@ -102,7 +102,8 @@ const DashboardSuperAdmin = () => {
     setFields({
       name: "",
       password: "",
-      role: "",
+      token: "",
+      sekolah: ""
     });
     setModalOpen(true);
   };

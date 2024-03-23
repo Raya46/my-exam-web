@@ -19,11 +19,11 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedSubscription, setSelectedSubscription] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  const handleCardPress = (subscription) => {
+  const handleCardPress = (item) => {
     if (localStorage.getItem("userToken")) {
-      setSelectedSubscription(subscription);
+      setSelectedItem(item);
       setModalOpen(true);
     } else {
       navigate("/login");
@@ -32,9 +32,10 @@ const HomePage = () => {
 
   const getSubsData = async () => {
     const userToken = localStorage.getItem("userToken");
-    const response = await axios.get(`${BASE_API_URL}subscription`, {
+    const response = await axios.get(`${BASE_API_URL}item`, {
       headers: { Authorization: `Bearer ${userToken}` },
     });
+    console.log(response.data)
     setsubsData(response.data.data);
   };
 
@@ -42,7 +43,7 @@ const HomePage = () => {
     getSubsData();
   }, []);
 
-  const handleSubmit = async (item_name, price, subscription_id) => {
+  const handleSubmit = async (item_name, price, item_id) => {
     const userToken = localStorage.getItem("userToken");
     try {
       const response = await axios.post(
@@ -50,7 +51,7 @@ const HomePage = () => {
         {
           item_name: item_name,
           price: price,
-          subscription_id: subscription_id,
+          item_id: item_id,
         },
         {
           headers: { Authorization: `Bearer ${userToken}` },
@@ -119,12 +120,12 @@ const HomePage = () => {
           <ModalHeader>Informasi Langganan</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {selectedSubscription && (
+            {selectedItem && (
               <>
-                <Text>{selectedSubscription.name}</Text>
+                <Text>{selectedItem.name}</Text>
                 <Text>
-                  {selectedSubscription.price}
-                  {selectedSubscription.currency}
+                  {selectedItem.price}
+                  {selectedItem.currency}
                 </Text>
               </>
             )}
@@ -142,9 +143,9 @@ const HomePage = () => {
               colorScheme="green"
               onClick={() =>
                 handleSubmit(
-                  selectedSubscription.name,
-                  selectedSubscription.price,
-                  selectedSubscription.id
+                  selectedItem.name,
+                  selectedItem.price,
+                  selectedItem.id
                 )
               }
             >

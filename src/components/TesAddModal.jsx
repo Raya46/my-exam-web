@@ -17,7 +17,6 @@ import {
 const TesAddModal = ({
   modalOpen,
   setModalOpen,
-  selectedUser,
   fields,
   setFields,
   addUser,

@@ -27,8 +27,6 @@ const ListPaymentPage = () => {
   const [fields, setFields] = useState({
     name: "",
     status: "",
-    created_at: "",
-    subscription_expiry_date: "",
   });
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalEdit, setModalEdit] = useState(false);
@@ -42,7 +40,7 @@ const ListPaymentPage = () => {
       console.log(response.data.data);
       setsubsData(response.data.data);
     } catch (error) {
-      console.error("Error fetching subscription data:", error);
+      console.error("Error fetching item data:", error);
     }
   };
 
@@ -55,8 +53,6 @@ const ListPaymentPage = () => {
     setFields({
       name: data.user.name,
       status: data.status,
-      created_at: data.created_at,
-      subscription_expiry_date: data.user.subscription_expiry_date,
     });
     setModalEdit(true);
   };
@@ -137,7 +133,7 @@ const ListPaymentPage = () => {
               <Tr>
                 <Th>No</Th>
                 <Th>Name</Th>
-                <Th>subscription</Th>
+                <Th>item</Th>
                 <Th>Price</Th>
                 <Th>Status</Th>
                 <Th>Token</Th>
@@ -151,12 +147,12 @@ const ListPaymentPage = () => {
                 <Tr key={item.id}>
                   <Td>{index + 1}</Td>
                   <Td>{item.user.name}</Td>
-                  <Td>{item.subscription.name}</Td>
-                  <Td>{item.subscription.price}</Td>
+                  <Td>{item.item.name}</Td>
+                  <Td>{item.item.price}</Td>
                   <Td>{item.status}</Td>
                   <Td>{item.order_id}</Td>
                   <Td>{item.created_at}</Td>
-                  <Td>{item.user.subscription_expiry_date}</Td>
+                  <Td>{item.user.item}</Td>
                   <Td alignItems={"center"}>
                     <Button onClick={() => handleCardPress(item)}>Edit</Button>
                     <Button onClick={() => deleteUser(item.id)}>Delete</Button>

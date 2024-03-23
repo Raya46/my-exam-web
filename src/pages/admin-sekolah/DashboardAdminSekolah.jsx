@@ -29,7 +29,7 @@ const DashboardAdminSekolah = () => {
     name: "",
     password: "",
     token: "",
-    role: "siswa",
+    role: "",
     kelas_jurusan: ""
   });
   const [selectedUser, setSelectedUser] = useState(null);
@@ -44,7 +44,7 @@ const DashboardAdminSekolah = () => {
       });
       setsubsData(response.data.data);
     } catch (error) {
-      console.error("Error fetching subscription data:", error);
+      console.error("Error fetching item data:", error);
     }
   };
 
@@ -105,6 +105,7 @@ const DashboardAdminSekolah = () => {
       name: "",
       password: "",
       role: "",
+      token:"USR-",
       kelas_jurusan: ""
     });
     setModalOpen(true);
@@ -206,6 +207,7 @@ const DashboardAdminSekolah = () => {
                 <Th>No</Th>
                 <Th>Name</Th>
                 <Th>Sekolah</Th>
+                <Th>Role</Th>
                 <Th>Kelas Jurusan</Th>
                 <Th>Token</Th>
                 <Th>Action</Th>
@@ -217,6 +219,7 @@ const DashboardAdminSekolah = () => {
                   <Td>{index + 1}</Td>
                   <Td>{item.name}</Td>
                   <Td>{item.sekolah}</Td>
+                  <Td>{item.role}</Td>
                   <Td>{item.kelas_jurusan}</Td>
                   <Td>{item.token ?? "not member"}</Td>
                   <Td alignItems={"center"}>

@@ -28,8 +28,9 @@ const LinkPage = () => {
   const [fields, setFields] = useState({
     link_name: "",
     link_title: "",
-    link_status: "",
+    sekolah:"",
     kelas_jurusan: "",
+    link_status: "",
   });
   const [selectedLink, setSelectedLink] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -41,6 +42,7 @@ const LinkPage = () => {
       const response = await axios.get(`${BASE_API_URL}links`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
+      console.log(response.data.data)
       setsubsData(response.data.data);
     } catch (error) {
       console.error("Error fetching subscription data:", error);
@@ -55,7 +57,7 @@ const LinkPage = () => {
         fields,
         { headers: { Authorization: `Bearer ${userToken}` } }
       );
-      console.log(response.data)
+      console.log(response.data.data)
       if (response.data.data === "success") {
         setModalOpen(false);
         getSubsData();
