@@ -1,7 +1,5 @@
 import axios from "axios"
-import { useNavigate } from "react-router-dom";
-const logoutUser = async () => {
-    const navigate = useNavigate()
+const logoutUser = async (navigate) => {
     const userToken = localStorage.getItem("userToken");
     try {
       await axios.post(

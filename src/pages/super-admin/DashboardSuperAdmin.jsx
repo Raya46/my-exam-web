@@ -1,6 +1,5 @@
 // Dashboard.js
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
   useToast,
   Flex,
@@ -23,7 +22,6 @@ import getData from "../../utils/getData";
 import addData from "../../utils/addData";
 import editData from "../../utils/editData";
 import deleteData from "../../utils/deleteData";
-import logoutUser from "../../utils/logoutUser";
 
 const DashboardSuperAdmin = () => {
   const toast = useToast();
@@ -138,7 +136,6 @@ const DashboardSuperAdmin = () => {
         <Flex alignItems="center" mb={6}>
           <Heading size="md">Dashboard</Heading>
           <Button onClick={() => handleModalOpen()}>+</Button>
-          <Button onClick={logoutUser}>logout</Button>
           <Spacer />
         </Flex>
         <TableContainer>

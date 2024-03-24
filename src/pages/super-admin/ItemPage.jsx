@@ -23,7 +23,6 @@ import getData from "../../utils/getData";
 import editData from "../../utils/editData";
 import deleteData from "../../utils/deleteData";
 import addData from "../../utils/addData";
-import logoutUser from "../../utils/logoutUser";
 
 const ItemPage = () => {
   const toast = useToast();
@@ -139,7 +138,6 @@ const ItemPage = () => {
         <Flex alignItems="center" mb={6}>
           <Heading size="md">Dashboard</Heading>
           <Button onClick={() => handleModalOpen()}>+</Button>
-          <Button onClick={logoutUser}>logout</Button>
           <Spacer />
         </Flex>
         <TableContainer>

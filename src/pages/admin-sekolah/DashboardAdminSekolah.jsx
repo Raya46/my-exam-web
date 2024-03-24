@@ -25,7 +25,6 @@ import getData from "../../utils/getData";
 import addData from "../../utils/addData";
 import deleteData from "../../utils/deleteData";
 import editData from "../../utils/editData";
-import logoutUser from "../../utils/logoutUser";
 
 const DashboardAdminSekolah = () => {
   const [file, setFile] = useState(null);
@@ -200,7 +199,6 @@ const DashboardAdminSekolah = () => {
           <Flex alignItems="center" mb={6}>
             <Heading size="md">Dashboard</Heading>
             <Button onClick={() => handleModalOpen()}>+</Button>
-            <Button onClick={logoutUser}>logout</Button>
             <Button onClick={() => handleDownload()}>Download siswa</Button>
             <Input type="file" onChange={handleFileChange} />
             <Button onClick={handleImport}>Import Data siswa</Button>

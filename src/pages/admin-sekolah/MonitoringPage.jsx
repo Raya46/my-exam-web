@@ -19,7 +19,6 @@ import {
 import BASE_API_URL from "../../constant/ip";
 import TesEditModal from "../../components/TesEditModal";
 import MainAdmin from "./Main";
-import logoutUser from "../../utils/logoutUser";
 import getData from "../../utils/getData";
 import editData from "../../utils/editData";
 
@@ -81,7 +80,6 @@ const MonitoringPage = () => {
         <Box flex="1" bg="gray.100" p={6}>
           <Flex alignItems="center" mb={6}>
             <Heading size="md">Dashboard</Heading>
-            <Button onClick={logoutUser}>logout</Button>
             <Spacer />
           </Flex>
           <TableContainer>

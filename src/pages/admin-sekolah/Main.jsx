@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import SidebarComponent from "../../components/SideBar";
 import BASE_API_URL from "../../constant/ip";
 import HomePage from "./HomePage";
 import logoutUser from "../../utils/logoutUser";
 import getData from "../../utils/getData";
+import {useNavigate} from "react-router-dom"
 
 function MainAdmin(props) {
+  const navigate = useNavigate()
   const [subsData, setsubsData] = useState([]);
 
   const getSubsData = async () => {
@@ -42,7 +43,7 @@ function MainAdmin(props) {
               icon={"fa-tv"}
             />
           </div>
-          <button onClick={logoutUser}>logout</button>
+          <button onClick={() => logoutUser(navigate)}>logout</button>
         </div>
         {subsData === null ? (
           <HomePage/>
