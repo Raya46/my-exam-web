@@ -1,18 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Flex,
-  Heading,
-  Input,
-  Button,
-  InputGroup,
-  InputRightElement,
-  FormControl,
-  FormLabel,
-  useToast,
-  Text
-} from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import BASE_API_URL from "../constant/ip";
@@ -32,10 +19,10 @@ const RegisterPage = () => {
     const response = await axios.post(`${BASE_API_URL}register`, {
       name: name,
       password: password,
-      sekolah: sekolah
+      sekolah: sekolah,
     });
 
-    if (response.data.data === 'success') {
+    if (response.data.data === "success") {
       navigate("/login");
       toast({
         title: "Register Berhasil",
@@ -69,7 +56,8 @@ const RegisterPage = () => {
                 value={sekolah}
                 onChange={(e) => setSekolah(e.target.value)}
                 className="border border-slate-200 rounded-md focus:border-blue-800 p-2 px-3 w-full focus:outline-none focus:ring-1 focus:ring-blue-800"
-                placeholder="School" />
+                placeholder="School"
+              />
             </div>
             <div className="w-full">
               <input
@@ -78,7 +66,8 @@ const RegisterPage = () => {
                 value={name}
                 onChange={(e) => setname(e.target.value)}
                 className="border border-slate-200 rounded-md focus:border-blue-800 p-2 px-3 w-full focus:outline-none focus:ring-1 focus:ring-blue-800"
-                placeholder="Email" />
+                placeholder="Email"
+              />
             </div>
             <div className="w-full">
               <input
@@ -88,7 +77,8 @@ const RegisterPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="border border-slate-200 rounded-md focus:border-blue-800 p-2 px-3 w-full focus:outline-none focus:ring-1 focus:ring-blue-800"
-                placeholder="Password" />
+                placeholder="Password"
+              />
             </div>
             <div className="w-full">
               <button
@@ -100,19 +90,29 @@ const RegisterPage = () => {
             </div>
           </form>
           <div className="w-full flex justify-center ">
-            <p>Forgot password?<span className="p-1 text-blue-800 underline font-medium">Register</span></p>
+            <p>
+              Forgot password?
+              <span className="p-1 text-blue-800 underline font-medium">
+                Register
+              </span>
+            </p>
           </div>
         </div>
         <div>
-          <p>Already have an account?<button onClick={() => navigate('/login')} className="p-1 text-blue-800 underline font-medium">
-            login
-          </button></p>
+          <p>
+            Already have an account?
+            <button
+              onClick={() => navigate("/login")}
+              className="p-1 text-blue-800 underline font-medium"
+            >
+              login
+            </button>
+          </p>
         </div>
       </div>
       {/* <div className="h-full w-2/4 md:block hidden">
         <img src={imageLogin} className="w-full h-full object-cover" />
       </div> */}
-
     </main>
     // <Flex
     //   height="100vh"

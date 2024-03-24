@@ -1,42 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import SidebarComponent from "../../components/SideBar";
 import BASE_API_URL from "../../constant/ip";
 import HomePage from "./HomePage";
+import logoutUser from "../../utils/logoutUser";
+import getData from "../../utils/getData";
 
 function MainAdmin(props) {
-  const navigate = useNavigate();
-  const [subsData, setsubsData] = useState({});
-
-  const handleLogout = async () => {
-    const userToken = localStorage.getItem("userToken");
-    try {
-      await axios.post(
-        `${BASE_API_URL}logout`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${userToken}` },
-        }
-      );
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    } catch (error) {
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    }
-  };
+  const [subsData, setsubsData] = useState([]);
 
   const getSubsData = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}admin-sekolah`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      setsubsData(response.data.paid);
-    } catch (error) {
-      console.error("Error fetching item data:", error);
-    }
+    const data = await getData(`${BASE_API_URL}admin-sekolah`);
+    setsubsData(data.data);
   };
 
   useEffect(() => {
@@ -67,7 +42,7 @@ function MainAdmin(props) {
               icon={"fa-tv"}
             />
           </div>
-          <button onClick={() => handleLogout()}>logout</button>
+          <button onClick={logoutUser}>logout</button>
         </div>
         {subsData === null ? (
           <HomePage/>

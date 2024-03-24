@@ -14,6 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import BASE_API_URL from "../../constant/ip";
+import getData from "../../utils/getData";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -31,12 +32,8 @@ const HomePage = () => {
   };
 
   const getSubsData = async () => {
-    const userToken = localStorage.getItem("userToken");
-    const response = await axios.get(`${BASE_API_URL}item`, {
-      headers: { Authorization: `Bearer ${userToken}` },
-    });
-    console.log(response.data)
-    setsubsData(response.data.data);
+    const data = await getData(`${BASE_API_URL}item`);
+    setsubsData(data.data);
   };
 
   useEffect(() => {

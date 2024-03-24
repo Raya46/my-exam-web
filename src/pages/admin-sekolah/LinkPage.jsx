@@ -17,14 +17,17 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
-import { useNavigate } from "react-router-dom";
 import TesEditModal from "../../components/TesEditModal";
 import TesAddModal from "../../components/TesAddModal";
 import MainAdmin from "./Main";
+import getData from "../../utils/getData";
+import addData from "../../utils/addData";
+import deleteData from "../../utils/deleteData";
+import editData from "../../utils/editData";
+import logoutUser from "../../utils/logoutUser";
 
 const LinkPage = () => {
   const toast = useToast();
-  const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
   const [fields, setFields] = useState({
     link_name: "",
@@ -38,53 +41,30 @@ const LinkPage = () => {
   const [modalEdit, setModalEdit] = useState(false);
 
   const getSubsData = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}links`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      console.log(response.data.data)
-      setsubsData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching subscription data:", error);
-    }
+    const data = await getData(`${BASE_API_URL}links`);
+    setsubsData(data.data);
   };
 
-  const addUser = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.post(
-        `${BASE_API_URL}links/post`,
-        fields,
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
-      console.log(response.data.data)
-      if (response.data.data === "success") {
-        setModalOpen(false);
-        getSubsData();
-        toast({
-          title: "Add user success",
+  const addLink = async () => {
+    const result = await addData(
+      `${BASE_API_URL}links/post`,
+      fields,
+      setModalOpen,
+      getSubsData
+    );
+    result === "success"
+      ? toast({
+          title: "success add user",
           status: "success",
           duration: 3000,
           isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Name atau Password salah",
+        })
+      : toast({
+          title: "fail add user",
           status: "error",
           duration: 3000,
           isClosable: true,
         });
-      }
-    } catch (error) {
-      console.error("Error adding user:", error);
-      toast({
-        title: "Error adding user",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
   };
 
   useEffect(() => {
@@ -112,23 +92,19 @@ const LinkPage = () => {
     setModalOpen(true);
   };
 
-  const deleteUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      await axios.delete(`${BASE_API_URL}links/${id}`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
+  const deleteLink = async (id) => {
+    const data = await deleteData("links/", id);
+    if (data === "success") {
       getSubsData();
       toast({
-        title: "Hapus user success",
+        title: "delete link success",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-    } catch (error) {
-      console.error("Error deleting user:", error);
+    } else {
       toast({
-        title: "Error deleting user",
+        title: "delete fail",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -136,56 +112,25 @@ const LinkPage = () => {
     }
   };
 
-  const editUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.put(`${BASE_API_URL}links/${id}`, fields, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      if (response.data.data === "success") {
+  const editLink = async (id) => {
+      const data = await editData("links/",id,fields)
+      if (data === "success") {
         setModalEdit(false);
         getSubsData();
         toast({
-          title: "Edit user success",
+          title: "Edit link success",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
       } else {
         toast({
-          title: "Edit user gagal",
+          title: "Edit link gagal",
           status: "error",
           duration: 3000,
           isClosable: true,
         });
       }
-    } catch (error) {
-      console.error("Error editing user:", error);
-      toast({
-        title: "Error editing user",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const handleLogout = async () => {
-    const userToken = localStorage.getItem("userToken");
-    try {
-      await axios.post(
-        `${BASE_API_URL}logout`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${userToken}` },
-        }
-      );
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    } catch (error) {
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    }
   };
 
   return (
@@ -197,7 +142,7 @@ const LinkPage = () => {
           <Flex alignItems="center" mb={6}>
             <Heading size="md">Dashboard</Heading>
             <Button onClick={() => handleModalOpen()}>+</Button>
-            <Button onClick={() => handleLogout()}>logout</Button>
+            <Button onClick={logoutUser}>logout</Button>
             <Spacer />
           </Flex>
           <TableContainer>
@@ -222,7 +167,7 @@ const LinkPage = () => {
                     <Td>{item.kelas_jurusan}</Td>
                     <Td alignItems={"center"}>
                       <Button onClick={() => handleCardPress(item)}>Edit</Button>
-                      <Button onClick={() => deleteUser(item.id)}>Delete</Button>
+                      <Button onClick={() => deleteLink(item.id)}>Delete</Button>
                     </Td>
                   </Tr>
                 ))}
@@ -235,7 +180,7 @@ const LinkPage = () => {
             selectedUser={selectedLink}
             fields={fields}
             setFields={setFields}
-            editUser={editUser}
+            editUser={editLink}
           />
 
           {/* Add User Modal */}
@@ -244,7 +189,7 @@ const LinkPage = () => {
             setModalOpen={setModalOpen}
             fields={fields}
             setFields={setFields}
-            addUser={addUser}
+            addUser={addLink}
           />
         </Box>
       </Flex>

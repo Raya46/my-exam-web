@@ -1,18 +1,7 @@
 import React, { useState } from "react";
 import {
-  Box,
-  Flex,
-  Heading,
-  Input,
-  Button,
-  InputGroup,
-  InputRightElement,
-  FormControl,
-  FormLabel,
   useToast,
-  Text
 } from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import BASE_API_URL from "../constant/ip";

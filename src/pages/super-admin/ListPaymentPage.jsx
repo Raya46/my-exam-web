@@ -17,12 +17,14 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
-import { useNavigate } from "react-router-dom";
 import TesEditModal from "../../components/TesEditModal";
+import logoutUser from "../../utils/logoutUser";
+import deleteData from "../../utils/deleteData";
+import editData from "../../utils/editData";
+import getData from "../../utils/getData";
 
 const ListPaymentPage = () => {
   const toast = useToast();
-  const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
   const [fields, setFields] = useState({
     name: "",
@@ -32,16 +34,8 @@ const ListPaymentPage = () => {
   const [modalEdit, setModalEdit] = useState(false);
 
   const getSubsData = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}super-admin/list-pay`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      console.log(response.data.data);
-      setsubsData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching item data:", error);
-    }
+    const data = await getData(`${BASE_API_URL}super-admin/list-pay`);
+    setsubsData(data.data);
   };
 
   useEffect(() => {
@@ -58,22 +52,18 @@ const ListPaymentPage = () => {
   };
 
   const deleteUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      await axios.delete(`${BASE_API_URL}super-admin/${id}`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
+    const data = await deleteData("super-admin/", id);
+    if (data === "success") {
       getSubsData();
       toast({
-        title: "Hapus user success",
+        title: "delete user success",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-    } catch (error) {
-      console.error("Error deleting user:", error);
+    } else {
       toast({
-        title: "Error deleting user",
+        title: "delete fail",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -82,49 +72,32 @@ const ListPaymentPage = () => {
   };
 
   const editUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.put(
-        `${BASE_API_URL}super-admin/${id}`,
-        fields,
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
-    } catch (error) {
-      console.error("Error editing user:", error);
+    const data = await editData("super-admin/",id,fields)
+    if (data === "success") {
+      setModalEdit(false);
+      getSubsData();
       toast({
-        title: "Error editing user",
+        title: "Edit user success",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Edit user gagal",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
     }
-  };
-
-  const handleLogout = async () => {
-    const userToken = localStorage.getItem("userToken");
-    try {
-      await axios.post(
-        `${BASE_API_URL}logout`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${userToken}` },
-        }
-      );
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    } catch (error) {
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    }
-  };
-
+};
   return (
     <Flex>
       {/* Main Content */}
       <Box flex="1" bg="gray.100" p={6}>
         <Flex alignItems="center" mb={6}>
           <Heading size="md">Dashboard</Heading>
-          <Button onClick={() => handleLogout()}>logout</Button>
+          <Button onClick={logoutUser}>logout</Button>
           <Spacer />
         </Flex>
         <TableContainer>

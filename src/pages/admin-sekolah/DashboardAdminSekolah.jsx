@@ -15,18 +15,21 @@ import {
   Td,
   TableContainer,
   Spacer,
-  Input
+  Input,
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
-import { useNavigate } from "react-router-dom";
 import TesEditModal from "../../components/TesEditModal";
 import TesAddModal from "../../components/TesAddModal";
 import MainAdmin from "./Main";
+import getData from "../../utils/getData";
+import addData from "../../utils/addData";
+import deleteData from "../../utils/deleteData";
+import editData from "../../utils/editData";
+import logoutUser from "../../utils/logoutUser";
 
 const DashboardAdminSekolah = () => {
-    const [file, setFile] = useState(null);
+  const [file, setFile] = useState(null);
   const toast = useToast();
-  const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
   const [fields, setFields] = useState({
     name: "",
@@ -40,51 +43,30 @@ const DashboardAdminSekolah = () => {
   const [modalEdit, setModalEdit] = useState(false);
 
   const getSubsData = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}admin-sekolah`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      setsubsData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching item data:", error);
-    }
+    const data = await getData(`${BASE_API_URL}admin-sekolah`);
+    setsubsData(data.data);
   };
 
   const addUser = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.post(
-        `${BASE_API_URL}admin-sekolah/post`,
-        fields,
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
-      if (response.data.data === "success") {
-        setModalOpen(false);
-        getSubsData();
-        toast({
-          title: "Add user success",
+    const result = await addData(
+      `${BASE_API_URL}admin-sekolah/post`,
+      fields,
+      setModalOpen,
+      getSubsData
+    );
+    result === "success"
+      ? toast({
+          title: "success add user",
           status: "success",
           duration: 3000,
           isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Name atau Password salah",
+        })
+      : toast({
+          title: "fail add user",
           status: "error",
           duration: 3000,
           isClosable: true,
         });
-      }
-    } catch (error) {
-      console.error("Error adding user:", error);
-      toast({
-        title: "Error adding user",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
   };
 
   useEffect(() => {
@@ -115,22 +97,18 @@ const DashboardAdminSekolah = () => {
   };
 
   const deleteUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      await axios.delete(`${BASE_API_URL}admin-sekolah/${id}`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
+    const data = await deleteData("admin-sekolah/", id);
+    if (data === "success") {
       getSubsData();
       toast({
-        title: "Hapus user success",
+        title: "delete user success",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-    } catch (error) {
-      console.error("Error deleting user:", error);
+    } else {
       toast({
-        title: "Error deleting user",
+        title: "delete fail",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -139,57 +117,23 @@ const DashboardAdminSekolah = () => {
   };
 
   const editUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.put(
-        `${BASE_API_URL}admin-sekolah/${id}`,
-        fields,
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
-      console.log(response.data);
-      if (response.data.data === "success") {
-        setModalEdit(false);
-        getSubsData();
-        toast({
-          title: "Edit user success",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Edit user gagal",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      console.error("Error editing user:", error);
+    const data = await editData("admin-sekolah/", id, fields);
+    if (data === "success") {
+      setModalEdit(false);
+      getSubsData();
       toast({
-        title: "Error editing user",
+        title: "Edit user success",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Edit user gagal",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
-    }
-  };
-
-  const handleLogout = async () => {
-    const userToken = localStorage.getItem("userToken");
-    try {
-      await axios.post(
-        `${BASE_API_URL}logout`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${userToken}` },
-        }
-      );
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    } catch (error) {
-      localStorage.removeItem("userToken");
-      navigate("/login");
     }
   };
 
@@ -225,7 +169,6 @@ const DashboardAdminSekolah = () => {
   };
 
   const handleFileChange = (e) => {
-    // Mengambil file yang dipilih oleh pengguna
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
   };
@@ -242,7 +185,7 @@ const DashboardAdminSekolah = () => {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      getSubsData()
+      getSubsData();
       console.log("Data siswa berhasil diimpor!");
     } catch (error) {
       console.error("Error importing siswa:", error);
@@ -257,7 +200,7 @@ const DashboardAdminSekolah = () => {
           <Flex alignItems="center" mb={6}>
             <Heading size="md">Dashboard</Heading>
             <Button onClick={() => handleModalOpen()}>+</Button>
-            <Button onClick={() => handleLogout()}>logout</Button>
+            <Button onClick={logoutUser}>logout</Button>
             <Button onClick={() => handleDownload()}>Download siswa</Button>
             <Input type="file" onChange={handleFileChange} />
             <Button onClick={handleImport}>Import Data siswa</Button>
@@ -283,7 +226,7 @@ const DashboardAdminSekolah = () => {
                     <Td>{item.name}</Td>
                     <Td>{item.sekolah}</Td>
                     <Td>{item.role}</Td>
-                    <Td>{item.kelas_jurusan}</Td>
+                    <Td>{item.kelas_jurusan ?? "admin"}</Td>
                     <Td>{item.token ?? "not member"}</Td>
                     <Td alignItems={"center"}>
                       <Button onClick={() => handleCardPress(item)}>

@@ -17,13 +17,16 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
-import { useNavigate } from "react-router-dom";
 import TesEditModal from "../../components/TesEditModal";
 import TesAddModal from "../../components/TesAddModal";
+import getData from "../../utils/getData";
+import editData from "../../utils/editData";
+import deleteData from "../../utils/deleteData";
+import addData from "../../utils/addData";
+import logoutUser from "../../utils/logoutUser";
 
 const ItemPage = () => {
   const toast = useToast();
-  const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
   const [fields, setFields] = useState({
     name: "",
@@ -37,35 +40,30 @@ const ItemPage = () => {
   const [modalEdit, setModalEdit] = useState(false);
 
   const getSubsData = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}item`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      console.log(response.data.data);
-      setsubsData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching item data:", error);
-    }
+    const data = await getData(`${BASE_API_URL}item`);
+    setsubsData(data.data);
   };
 
-  const addUser = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.post(
-        `${BASE_API_URL}item/post`,
-        fields,
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
-    } catch (error) {
-      console.error("Error adding user:", error);
-      toast({
-        title: "Error adding user",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+  const addItem = async () => {
+    const result = await addData(
+      `${BASE_API_URL}item/post`,
+      fields,
+      setModalOpen,
+      getSubsData
+    );
+    result === "success"
+      ? toast({
+          title: "success add user",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      : toast({
+          title: "fail add user",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
   };
 
   useEffect(() => {
@@ -94,22 +92,18 @@ const ItemPage = () => {
   };
 
   const deleteUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      await axios.delete(`${BASE_API_URL}item/${id}`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
+    const data = await deleteData("item/", id);
+    if (data === "success") {
       getSubsData();
       toast({
-        title: "Hapus user success",
+        title: "delete user success",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-    } catch (error) {
-      console.error("Error deleting user:", error);
+    } else {
       toast({
-        title: "Error deleting user",
+        title: "delete fail",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -118,14 +112,8 @@ const ItemPage = () => {
   };
 
   const editUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.put(
-        `${BASE_API_URL}item/${id}`,
-        fields,
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
-      if (response.data.data === "success") {
+      const data = await editData("item/",id,fields)
+      if (data === "success") {
         setModalEdit(false);
         getSubsData();
         toast({
@@ -142,33 +130,6 @@ const ItemPage = () => {
           isClosable: true,
         });
       }
-    } catch (error) {
-      console.error("Error editing user:", error);
-      toast({
-        title: "Error editing user",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const handleLogout = async () => {
-    const userToken = localStorage.getItem("userToken");
-    try {
-      await axios.post(
-        `${BASE_API_URL}logout`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${userToken}` },
-        }
-      );
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    } catch (error) {
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    }
   };
 
   return (
@@ -178,7 +139,7 @@ const ItemPage = () => {
         <Flex alignItems="center" mb={6}>
           <Heading size="md">Dashboard</Heading>
           <Button onClick={() => handleModalOpen()}>+</Button>
-          <Button onClick={() => handleLogout()}>logout</Button>
+          <Button onClick={logoutUser}>logout</Button>
           <Spacer />
         </Flex>
         <TableContainer>
@@ -226,7 +187,7 @@ const ItemPage = () => {
           setModalOpen={setModalOpen}
           fields={fields}
           setFields={setFields}
-          addUser={addUser}
+          addUser={addItem}
         />
       </Box>
     </Flex>

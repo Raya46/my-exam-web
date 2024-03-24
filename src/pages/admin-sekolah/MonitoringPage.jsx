@@ -17,13 +17,14 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import BASE_API_URL from "../../constant/ip";
-import { useNavigate } from "react-router-dom";
 import TesEditModal from "../../components/TesEditModal";
 import MainAdmin from "./Main";
+import logoutUser from "../../utils/logoutUser";
+import getData from "../../utils/getData";
+import editData from "../../utils/editData";
 
 const MonitoringPage = () => {
   const toast = useToast();
-  const navigate = useNavigate();
   const [subsData, setsubsData] = useState([]);
   const [fields, setFields] = useState({
     user_id: 0,
@@ -34,53 +35,30 @@ const MonitoringPage = () => {
   const [modalEdit, setModalEdit] = useState(false);
 
   const getSubsData = async () => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.get(`${BASE_API_URL}progress`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      setsubsData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching subscription data:", error);
-    }
+    const data = await getData(`${BASE_API_URL}progress`);
+    setsubsData(data.data);
   };
 
   const editUser = async (id) => {
-    try {
-      const userToken = localStorage.getItem("userToken");
-      const response = await axios.put(
-        `${BASE_API_URL}progress/${id}`,
-        fields,
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      );
-      console.log(response.data)
-      if (response.data.data === "success") {
-        setModalEdit(false);
-        getSubsData();
-        toast({
-          title: "Edit user success",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Edit user gagal",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      console.error("Error editing user:", error);
+    const data = await editData("progress/",id,fields)
+    if (data === "success") {
+      setModalEdit(false);
+      getSubsData();
       toast({
-        title: "Error editing user",
+        title: "Edit user success",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Edit user gagal",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
     }
-  };
+};
 
   useEffect(() => {
     getSubsData();
@@ -96,24 +74,6 @@ const MonitoringPage = () => {
     setModalEdit(true);
   };
 
-  const handleLogout = async () => {
-    const userToken = localStorage.getItem("userToken");
-    try {
-      await axios.post(
-        `${BASE_API_URL}logout`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${userToken}` },
-        }
-      );
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    } catch (error) {
-      localStorage.removeItem("userToken");
-      navigate("/login");
-    }
-  };
-
   return (
     <MainAdmin>
       <Flex>
@@ -121,7 +81,7 @@ const MonitoringPage = () => {
         <Box flex="1" bg="gray.100" p={6}>
           <Flex alignItems="center" mb={6}>
             <Heading size="md">Dashboard</Heading>
-            <Button onClick={() => handleLogout()}>logout</Button>
+            <Button onClick={logoutUser}>logout</Button>
             <Spacer />
           </Flex>
           <TableContainer>
